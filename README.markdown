@@ -214,6 +214,8 @@ Options Reference
             --no-minimize-url            Accept URLs as-is without attempting to connect to a higher level directory
             --revision START_REV[:END_REV]
                                          Start importing from SVN revision START_REV; optionally end at END_REV
+
+            --log-window-size NUM        Fetch NUM svn log entries per request (default is 100, more takes query time and RAM)
             --rewrite-root URL           Set the rewriteRoot option in the [svn-remote] config
         -m, --metadata                   Include metadata in git logs (git-svn-id)
             --authors AUTHORS_FILE       Path to file containing svn-to-git authors mapping (default: ~/.svn2git/authors)

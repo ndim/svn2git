@@ -43,6 +43,7 @@ module Svn2Git
       options[:branches] = 'branches'
       options[:tags] = 'tags'
       options[:exclude] = []
+      options[:logwindowsize] = nil
       options[:rewriteroot] = nil
       options[:revision] = nil
       options[:username] = nil
@@ -106,6 +107,10 @@ module Svn2Git
           options[:revision] = revision
         end
 
+        opts.on('--log-window-size NUM', 'Fetch NUM svn log entries per request') do |logwindowsize|
+          options[:logwindowsize] = logwindowsize
+        end
+
         opts.on('--rewrite-root URL', 'Set the rewriteRoot option in the [svn-remote] config') do |rewriteroot|
           options[:rewriteroot] = rewriteroot
         end
@@ -152,6 +157,7 @@ module Svn2Git
       authors = @options[:authors]
       exclude = @options[:exclude]
       revision = @options[:revision]
+      logwindowsize = @options[:logwindowsize]
       rewriteroot = @options[:rewriteroot]
       username = @options[:username]
 
@@ -189,6 +195,7 @@ module Svn2Git
       run_command("git config --local svn.authorsfile #{authors}") unless authors.nil?
 
       cmd = "git svn fetch "
+      cmd += "--log-window-size=#{logwindowsize} " unless logwindowsize.nil?
       unless revision.nil?
         range = revision.split(":")
         range[1] = "HEAD" unless range[1]
@@ -264,7 +271,9 @@ module Svn2Git
       svn_branches.delete_if { |b| b.strip !~ %r{^svn\/} }
 
       if @options[:rebase]
-         run_command("git svn fetch")
+        cmd = "git svn fetch"
+        cmd += " --log-window-size=#{logwindowsize}" unless logwindowsize.nil?
+        run_command(cmd)
       end
 
       svn_branches.each do |branch|
